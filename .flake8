@@ -1,0 +1,16 @@
+[flake8]
+max-line-length = 79
+exclude =
+    .git,
+    __pycache__,
+    migrations,
+    venv,
+    env,
+    news_project/settings.py,
+    news_project/wsgi.py,
+    news_project/asgi.py
+ignore =
+    W503,
+    E203
+per-file-ignores =
+    news/apps.py:F401
