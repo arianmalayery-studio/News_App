@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News App | Registration Pending</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .box { background: white; padding: 36px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 440px; text-align: center; }
+        .icon { font-size: 48px; color: #d69e2e; margin-bottom: 12px; }
+        h2 { margin: 0 0 12px 0; color: #1a365d; }
+        p { color: #4a5568; line-height: 1.5; font-size: 15px; }
+        .role-tag { display: inline-block; padding: 4px 10px; background: #edf2f7; font-weight: bold; border-radius: 4px; color: #2b6cb0; }
+        .btn { display: inline-block; margin-top: 20px; padding: 10px 22px; background: #2b6cb0; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; }
+        .btn:hover { background: #2c5282; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="icon">⏳</div>
+        <h2>Registration Received</h2>
+        <p>Thank you for signing up, <strong>{{ username }}</strong>!</p>
+        <p>
+            Your account was registered as a <span class="role-tag">{{ role_display }}</span>.
+            Because staff accounts have publishing and editorial capabilities, your account is
+            <strong>pending administrator approval</strong>.
+        </p>
+        <p>Once an administrator activates your account, you will be able to log in and begin using the platform.</p>
+        <a href="{% url 'home' %}" class="btn">Return to Home</a>
+    </div>
+</body>
+</html>

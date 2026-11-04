@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News App | Register</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; }
+        .box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); width: 340px; }
+        h2 { margin-top: 0; color: #1a365d; }
+        .field { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background: #2b6cb0; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #2c5282; }
+        p { margin-top: 15px; text-align: center; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Register</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="field">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="field">
+                <label for="role">Role</label>
+                <select name="role" id="role">
+                    <option value="READER">Reader</option>
+                    <option value="JOURNALIST">Journalist</option>
+                    <option value="EDITOR">Editor</option>
+                </select>
+            </div>
+            <button type="submit">Create Account</button>
+        </form>
+        <p>Already registered? <a href="{% url 'login' %}">Log In</a></p>
+        <p><a href="{% url 'home' %}">← Back to Home</a></p>
+    </div>
+</body>
+</html>

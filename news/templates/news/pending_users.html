@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News App | Pending User Approvals</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; color: #333; }
+        header { background: #1a365d; color: white; padding: 16px 36px; display: flex; justify-content: space-between; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: bold; margin-left: 14px; }
+        .container { max-width: 860px; margin: 30px auto; background: white; padding: 26px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        h2 { color: #2b6cb0; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        th { background: #edf2f7; }
+        .btn-approve { background: #2f855a; color: white; border: none; padding: 6px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .btn-approve:hover { background: #276749; }
+        .empty { text-align: center; padding: 30px; color: #718096; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 style="margin: 0; font-size: 20px;">Staff Account Approvals</h1>
+        <nav>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="/admin/" target="_blank">Django Admin</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h2>Users Pending Administrator Approval</h2>
+        <p>Activate staff accounts so journalists and editors can access their workspaces.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Requested Role</th>
+                    <th>Joined</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in pending_users %}
+                    <tr>
+                        <td><strong>{{ u.username }}</strong></td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.get_role_display }}</td>
+                        <td>{{ u.date_joined|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <form method="post" action="{% url 'approve_user' u.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-approve">Approve & Activate</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty">No accounts currently pending approval. All caught up!</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

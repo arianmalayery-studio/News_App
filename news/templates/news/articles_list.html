@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News App | Published Articles</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; color: #333; }
+        header { background: #1a365d; color: white; padding: 16px 36px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 20px; }
+        header a { color: white; text-decoration: none; font-weight: bold; margin-left: 16px; font-size: 14px; }
+        header a:hover { text-decoration: underline; }
+        .container { max-width: 880px; margin: 30px auto; padding: 0 16px; }
+        .article-card { background: white; padding: 22px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .article-card h2 { margin-top: 0; color: #2b6cb0; font-size: 22px; }
+        .meta-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #edf2f7; font-size: 13px; color: #718096; flex-wrap: wrap; gap: 8px; }
+        .content { line-height: 1.6; color: #4a5568; }
+        .sub-btn { display: inline-block; padding: 4px 10px; font-size: 12px; font-weight: bold; border-radius: 4px; text-decoration: none; border: 1px solid #2b6cb0; cursor: pointer; }
+        .btn-follow { background: #2b6cb0; color: white; }
+        .btn-follow:hover { background: #2c5282; }
+        .btn-unfollow { background: #edf2f7; color: #4a5568; border-color: #cbd5e0; }
+        .btn-unfollow:hover { background: #e2e8f0; }
+        .messages { margin-bottom: 16px; }
+        .alert { padding: 10px 14px; border-radius: 4px; background: #c6f6d5; color: #22543d; font-size: 14px; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; background: #edf2f7; color: #4a5568; margin-left: 6px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>News Application</h1>
+        <nav>
+            <a href="{% url 'home' %}">Home</a>
+            {% if user.is_authenticated %}
+                <span>{{ user.username }} <span class="badge">{{ user.get_role_display }}</span></span>
+                {% if user.role == "READER" or user.is_superuser %}
+                    <a href="{% url 'reader_feed' %}">My Subscriptions</a>
+                    <a href="{% url 'manage_subscriptions' %}">Manage Subs</a>
+                {% endif %}
+                {% if user.role == "JOURNALIST" or user.is_superuser %}
+                    <a href="{% url 'journalist_desk' %}">Journalist Desk</a>
+                {% endif %}
+                {% if user.role == "EDITOR" or user.is_superuser %}
+                    <a href="{% url 'editor_dashboard' %}">Editor Dashboard</a>
+                {% endif %}
+                <a href="{% url 'logout' %}">Log Out</a>
+            {% else %}
+                <a href="{% url 'login' %}">Log In</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <h2>Published Stories</h2>
+
+        {% for article in articles %}
+            <div class="article-card">
+                <h2>{{ article.title }}</h2>
+                <div class="meta-bar">
+                    <div>
+                        By <strong>{{ article.author.username }}</strong>
+                        {% if user.is_authenticated and user.role == "READER" %}
+                            {% if article.author in user.subscribed_journalists.all %}
+                                <a href="{% url 'toggle_author_sub' article.author.id %}?next=articles" class="sub-btn btn-unfollow">✓ Subscribed</a>
+                            {% else %}
+                                <a href="{% url 'toggle_author_sub' article.author.id %}?next=articles" class="sub-btn btn-follow">+ Subscribe</a>
+                            {% endif %}
+                        {% endif %}
+                        {% if article.publisher %}
+                            | <em>{{ article.publisher.name }}</em>
+                        {% endif %}
+                        | {{ article.created_at|date:"M d, Y" }}
+                    </div>
+                </div>
+                <div class="content">{{ article.content }}</div>
+            </div>
+        {% empty %}
+            <div style="background: white; padding: 30px; text-align: center; border-radius: 6px;">
+                <p>No published articles currently available.</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

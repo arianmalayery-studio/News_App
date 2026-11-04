@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News App | Developer & REST API Portal</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; color: #333; }
+        header { background: #1a365d; color: white; padding: 16px 36px; display: flex; justify-content: space-between; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: bold; margin-left: 16px; font-size: 14px; }
+        .container { max-width: 880px; margin: 30px auto; background: white; padding: 26px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        h2 { color: #2b6cb0; margin-top: 0; }
+        .section { margin-top: 24px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .link-box { display: flex; justify-content: space-between; align-items: center; background: #f7fafc; border: 1px solid #e2e8f0; padding: 14px 18px; border-radius: 6px; margin-bottom: 12px; }
+        .btn { padding: 8px 14px; background: #2b6cb0; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; border: none; cursor: pointer; }
+        .btn:hover { background: #2c5282; }
+        .btn-outline { background: transparent; color: #2b6cb0; border: 1px solid #2b6cb0; margin-left: 6px; }
+        .btn-outline:hover { background: #ebf8ff; }
+        .btn-reddit { background: #ff4500; }
+        .btn-reddit:hover { background: #e03d00; }
+        code { background: #edf2f7; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-weight: bold; }
+        .tester-box { background: #edf2f7; padding: 16px; border-radius: 6px; margin-top: 10px; }
+        .form-row { display: flex; gap: 10px; margin-top: 8px; }
+        .form-row input { flex: 1; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; }
+        pre { background: #1a202c; color: #68d391; padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin-top: 10px; white-space: pre-wrap; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 style="margin: 0; font-size: 20px;">Developer & API Hub</h1>
+        <nav>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'public_articles' %}">Articles</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}">Log Out</a>
+            {% else %}
+                <a href="{% url 'login' %}">Log In</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Developer API & Community Resources</h2>
+        <p>Explore programmatic interfaces, token authentication, and community technical discussions.</p>
+
+        {% csrf_token %}
+
+        <div class="section">
+            <h3>Interactive Token Authenticator</h3>
+            <p>Generate a real DRF Token for any user account via <code>POST /api/token/</code>:</p>
+            <div class="tester-box">
+                <div class="form-row">
+                    <input type="text" id="token-username" placeholder="Username" value="{{ user.username }}">
+                    <input type="password" id="token-password" placeholder="Password">
+                    <button class="btn" onclick="fetchToken()">Generate Token</button>
+                </div>
+                <div id="token-result" style="display: none;">
+                    <pre id="token-display"></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>REST API Endpoints</h3>
+            <div class="link-box">
+                <div>
+                    <strong>Article Endpoints</strong><br>
+                    <small>All articles endpoint: <code>/api/articles/</code></small>
+                </div>
+                <div>
+                    <button class="btn" onclick="inspectEndpoint('/api/articles/')">Inspect Data</button>
+                    <a href="/api/articles/" class="btn btn-outline" target="_blank">Open URL ↗</a>
+                </div>
+            </div>
+
+            <div class="link-box">
+                <div>
+                    <strong>Subscribed Reader Feed Endpoint</strong><br>
+                    <small>Reader personalized feed: <code>/api/articles/subscribed/</code></small>
+                </div>
+                <div>
+                    <button class="btn" onclick="inspectEndpoint('/api/articles/subscribed/')">Inspect Data</button>
+                    <a href="/api/articles/subscribed/" class="btn btn-outline" target="_blank">Open URL ↗</a>
+                </div>
+            </div>
+
+            <div id="api-inspector" style="display: none; margin-top: 14px;">
+                <h4 id="inspector-title" style="margin: 0 0 6px 0; color: #2b6cb0;">Endpoint Response</h4>
+                <pre id="inspector-display"></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Community & Reddit Links</h3>
+            <div class="link-box">
+                <div>
+                    <strong>r/django Community</strong><br>
+                    <small>Official subreddit for Django framework updates, ORM discussions, and architecture patterns.</small>
+                </div>
+                <a href="https://www.reddit.com/r/django/" class="btn btn-reddit" target="_blank" rel="noopener noreferrer">Visit r/django ↗</a>
+            </div>
+
+            <div class="link-box">
+                <div>
+                    <strong>r/djangolearning</strong><br>
+                    <small>Community Q&A on role-based authentication, signals, and DRF integrations.</small>
+                </div>
+                <a href="https://www.reddit.com/r/djangolearning/" class="btn btn-reddit" target="_blank" rel="noopener noreferrer">Visit r/djangolearning ↗</a>
+            </div>
+
+            <div class="link-box">
+                <div>
+                    <strong>Reddit Developer Portal</strong><br>
+                    <small>Documentation and developer guidelines for Reddit's official REST API.</small>
+                </div>
+                <a href="https://www.reddit.com/dev/api/" class="btn btn-reddit" target="_blank" rel="noopener noreferrer">Reddit API Docs ↗</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let savedToken = "";
+
+        function getCsrfToken() {
+            const input = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (input) return input.value;
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === 'csrftoken=') {
+                        cookieValue = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function fetchToken() {
+            const username = document.getElementById('token-username').value;
+            const password = document.getElementById('token-password').value;
+            const resultBox = document.getElementById('token-result');
+            const display = document.getElementById('token-display');
+            const csrfToken = getCsrfToken();
+
+            if (!username || !password) {
+                alert('Please enter both username and password.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/token/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                resultBox.style.display = 'block';
+                display.textContent = JSON.stringify(data, null, 2);
+                if (data.token) {
+                    savedToken = data.token;
+                }
+            } catch (err) {
+                resultBox.style.display = 'block';
+                display.textContent = 'Error connecting to token endpoint: ' + err;
+            }
+        }
+
+        async function inspectEndpoint(url) {
+            const inspector = document.getElementById('api-inspector');
+            const title = document.getElementById('inspector-title');
+            const display = document.getElementById('inspector-display');
+
+            inspector.style.display = 'block';
+            title.textContent = 'Response from: ' + url;
+            display.textContent = 'Fetching data...';
+
+            const headers = { 'Accept': 'application/json' };
+            if (savedToken) {
+                headers['Authorization'] = 'Token ' + savedToken;
+            }
+
+            try {
+                const response = await fetch(url, { headers });
+                const data = await response.json();
+                display.textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                display.textContent = 'Failed to load endpoint data: ' + err;
+            }
+        }
+    </script>
+</body>
+</html>

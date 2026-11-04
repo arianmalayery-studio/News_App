@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News App | Journalist Desk</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; color: #333; }
+        header { background: #1a365d; color: white; padding: 16px 36px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 20px; }
+        header a { color: white; text-decoration: none; font-weight: bold; margin-left: 16px; font-size: 14px; }
+        header a:hover { text-decoration: underline; }
+        .container { max-width: 880px; margin: 30px auto; background: white; padding: 26px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        h2 { color: #2b6cb0; margin-top: 0; }
+        .field { margin-bottom: 16px; }
+        label { display: block; font-weight: bold; margin-bottom: 6px; }
+        input[type="text"], select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        textarea { height: 160px; font-family: inherit; }
+        button { background: #2f855a; color: white; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #276749; }
+        .my-articles { margin-top: 36px; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+        th { background: #edf2f7; }
+        .status-badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .approved { background: #c6f6d5; color: #22543d; }
+        .pending { background: #feebc8; color: #7b341e; }
+        .messages { margin-bottom: 16px; }
+        .alert { padding: 10px 14px; border-radius: 4px; background: #c6f6d5; color: #22543d; font-size: 14px; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; background: #edf2f7; color: #4a5568; margin-left: 6px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>News Application</h1>
+        <nav>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'public_articles' %}">Published Articles</a>
+            <span>{{ user.username }} <span class="badge">{{ user.get_role_display }}</span></span>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <h2>Submit New Article for Review</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="field">
+                <label for="title">Article Title</label>
+                <input type="text" name="title" id="title" required placeholder="Enter headline...">
+            </div>
+            <div class="field">
+                <label for="publisher">Publisher (Optional)</label>
+                <select name="publisher" id="publisher">
+                    <option value="">-- Independent Publication --</option>
+                    {% for p in publishers %}
+                        <option value="{{ p.id }}">{{ p.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label for="content">Article Content</label>
+                <textarea name="content" id="content" required placeholder="Write your news report here..."></textarea>
+            </div>
+            <button type="submit">Submit for Editorial Approval</button>
+        </form>
+
+        <div class="my-articles">
+            <h3>Your Submitted Articles</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Publisher</th>
+                        <th>Status</th>
+                        <th>Date Submitted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for art in my_articles %}
+                        <tr>
+                            <td><strong>{{ art.title }}</strong></td>
+                            <td>{{ art.publisher.name|default:"Independent" }}</td>
+                            <td>
+                                {% if art.approved %}
+                                    <span class="status-badge approved">Published</span>
+                                {% else %}
+                                    <span class="status-badge pending">Under Editorial Review</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ art.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4" style="text-align: center; color: #718096;">No articles submitted yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
