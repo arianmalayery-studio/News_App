@@ -1,3 +1,10 @@
+"""Django template views for the news web application.
+
+Handles public article browsing, reader feeds and subscriptions,
+journalist submissions, user authentication, editorial moderation, and
+administrator staff account approvals.
+"""
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
