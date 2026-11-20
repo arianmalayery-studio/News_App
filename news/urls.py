@@ -1,3 +1,9 @@
+"""URL routing configuration for the news application.
+
+Maps web interface views, authentication routes, editorial and admin
+approval endpoints, and RESTful API viewset/token routes.
+"""
+
 from django.urls import include, path
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
