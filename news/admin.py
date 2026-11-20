@@ -1,10 +1,20 @@
+"""Admin configuration for managing users, publishers, and content.
+
+Registers the CustomUser, Publisher, Article, and Newsletter models
+with the Django admin site and customizes their list displays,
+filters, search fields, fieldsets, and horizontal relation widgets.
+"""
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+
 from .models import CustomUser, Publisher, Article, Newsletter
 
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
+    """Admin configuration for CustomUser roles and subscriptions."""
+
     fieldsets = UserAdmin.fieldsets + (
         (
             "Role & Subscriptions",
@@ -25,12 +35,16 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Publisher)
 class PublisherAdmin(admin.ModelAdmin):
+    """Admin configuration for Publisher editors and journalists."""
+
     list_display = ("name", "created_at")
     filter_horizontal = ("editors", "journalists")
 
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
+    """Admin configuration for Article filtering and search."""
+
     list_display = ("title", "author", "publisher", "approved", "created_at")
     list_filter = ("approved", "publisher", "created_at")
     search_fields = ("title", "content")
@@ -38,5 +52,7 @@ class ArticleAdmin(admin.ModelAdmin):
 
 @admin.register(Newsletter)
 class NewsletterAdmin(admin.ModelAdmin):
+    """Admin configuration for Newsletter records and articles."""
+
     list_display = ("title", "author", "created_at")
     filter_horizontal = ("articles",)
