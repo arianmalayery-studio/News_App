@@ -83,6 +83,8 @@ The application leverages event automation to decouple publication actions from 
 
 * **Backend**: Python 3.14, Django 6.1, Django REST Framework
 * **Database**: MariaDB / MySQL (via `mysqlclient` / `pymysql`)
+* **Documentation**: Sphinx (docs/_build/html/index.html)
+* **Containerization**: Docker (python:3.12-slim)
 * **Authentication**: Django Session Authentication & DRF Token Authentication
 * **Testing & Quality**: Django `APITestCase`, `unittest.mock`, `flake8`, `black`
 
@@ -90,10 +92,12 @@ The application leverages event automation to decouple publication actions from 
 
 ## 🗄️ Database Configuration (MariaDB)
 
-Ensure MariaDB is running locally and execute the following SQL commands to configure the database and user credentials:
+Default (SQLite): Out of the box, settings.py automatically falls back to SQLite (db.sqlite3) when no DB_HOST environment variable is set. This allows the application to run immediately both locally and inside Docker without extra database setup.
+
+Optional MariaDB / MySQL Configuration: If you wish to use MariaDB/MySQL instead, ensure your database server is running and execute:
 
 ```sql
-CREATE DATABASE news_application_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CCREATE DATABASE news_application_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER 'news_user'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON news_application_db.* TO 'news_user'@'localhost';
 FLUSH PRIVILEGES;
@@ -101,7 +105,27 @@ FLUSH PRIVILEGES;
 
 ---
 
+## Project Structure
+
+* `news_project/` – Core Django project configuration (`settings.py`, `urls.py`, `wsgi.py`)
+* `news/` – Main Django application containing models, views, serializers, permissions, and templates
+* `docs/` – Auto-generated Sphinx HTML documentation (`docs/_build/html/index.html`)
+* `Dockerfile` – Container configuration for building and running the application with Docker
+* `requirements.txt` – Python dependencies required to run the application and build documentation
+
+---
+
+## Prerequisites
+
+* **Python 3.12+** (if running locally with a virtual environment)
+* **Git**
+* **Docker Desktop** (if running via Docker container)
+
+---
+
 ## 🚀 Setup & Installation
+
+## Option 1: Running Locally with a Virtual Environment (`venv`)
 
 1. **Clone the repository**:
    ```bash
@@ -139,6 +163,21 @@ FLUSH PRIVILEGES;
    python manage.py runserver
    ```
    Navigate to `http://127.0.0.1:8000/` to explore the platform.
+
+## Option 2: Running with Docker
+
+1. **Build the Docker image from the directory containing the Dockerfile:**
+   ```bash
+   docker build -t news-app .
+   ```
+
+2. **Run the docker container**
+   ```bash
+   docker run -p 8000:8000 news-app
+   ```
+
+3. **Access the application**
+   Open your browser and navigate to http://localhost:8000/ (or http://127.0.0.1:8000/).(Note: Even though the terminal logs Starting WSGI development server at http://0.0.0.0:8000/, use localhost:8000 in your browser.)
 
 ---
 
