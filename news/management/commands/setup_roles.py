@@ -1,16 +1,27 @@
+"""Management command to initialize default role groups and permissions.
+
+Configures the Reader, Journalist, and Editor Django auth groups with
+their respective model permissions for Article, Newsletter, and
+Publisher.
+"""
+
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+
 from news.models import Article, Newsletter, Publisher
 
 
 class Command(BaseCommand):
+    """Management command to configure role groups and permissions."""
+
     help = (
         "Sets up default user groups and model permissions for "
         "Reader, Editor, and Journalist roles."
     )
 
     def handle(self, *args, **options):
+        """Create role groups and assign model permissions to each."""
         # 1. Fetch content types for our models
         article_ct = ContentType.objects.get_for_model(Article)
         newsletter_ct = ContentType.objects.get_for_model(Newsletter)
