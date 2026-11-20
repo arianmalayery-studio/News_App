@@ -1,4 +1,11 @@
+"""Automated test suite for the news application API and signals.
+
+Covers token authentication, role-based permissions, subscription
+feed filtering, approval signal notifications, and newsletters.
+"""
+
 from unittest.mock import patch
+
 from django.core import mail
 from django.urls import reverse
 from rest_framework import status
@@ -9,7 +16,10 @@ from .models import Article, CustomUser, Newsletter, Publisher
 
 
 class NewsApplicationAPITests(APITestCase):
+    """Test suite for news API endpoints, permissions, and signals."""
+
     def setUp(self):
+        """Set up test users, publishers, subscriptions, and articles."""
         # 1. Create Users for each role
         self.journalist = CustomUser.objects.create_user(
             username="jane_journalist",
@@ -43,7 +53,7 @@ class NewsApplicationAPITests(APITestCase):
             name="Science Weekly", description="Science discoveries."
         )
 
-        # 3. Establish Reader Subscriptions (Subscribed to publisher_tech and
+        # 3. Establish Reader Subscriptions (publisher_tech and
         # journalist)
         self.reader.subscribed_publishers.add(self.publisher_tech)
         self.reader.subscribed_journalists.add(self.journalist)
@@ -87,8 +97,7 @@ class NewsApplicationAPITests(APITestCase):
     # 1. AUTHENTICATION & ROLE ACCESS
     # ========================================================
     def test_unauthenticated_requests_blocked(self):
-        """Unauthenticated requests cannot access protected article
-        endpoints."""
+        """Block unauthenticated access to protected article endpoints."""
         url = reverse("article-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -120,8 +129,7 @@ class NewsApplicationAPITests(APITestCase):
         self.assertNotIn(self.article_pending.title, titles)
 
     def test_reader_subscribed_feed_filtering(self):
-        """Reader subscribed endpoint returns only content matching
-        subscriptions."""
+        """Return only subscribed content on the reader feed endpoint."""
         self.client.credentials(
             HTTP_AUTHORIZATION=f"Token {self.reader_token.key}"
         )
@@ -132,7 +140,8 @@ class NewsApplicationAPITests(APITestCase):
         article_ids = [a["id"] for a in response.data]
         self.assertIn(self.article_sub1.id, article_ids)
         self.assertIn(self.article_sub2.id, article_ids)
-        # Verify article under science publisher (not subscribed) is excluded
+        # Verify article under science publisher (not subscribed) is
+        # excluded
         self.reader.subscribed_journalists.remove(self.journalist)
         response_filtered = self.client.get(url)
         filtered_ids = [a["id"] for a in response_filtered.data]
@@ -219,8 +228,11 @@ class NewsApplicationAPITests(APITestCase):
     # ========================================================
     @patch("requests.post")
     def test_approval_signal_triggers_email_and_webhook_mock(self, mock_post):
-        """Approving an article triggers both an email to subscribed readers
-        and a simulated POST request to /api/approved/."""
+        """Verify approval triggers subscriber email and webhook POST.
+
+        Approving an article should email subscribed readers and send
+        a simulated POST request to /api/approved/.
+        """
         mail.outbox = []
 
         # Create unapproved article
