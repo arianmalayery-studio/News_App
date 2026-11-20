@@ -1,11 +1,20 @@
+"""Database models for publishers, users, articles, and newsletters.
+
+Defines Publisher, CustomUser (with Reader, Editor, and Journalist
+roles and subscription/group management), Article, and Newsletter.
+"""
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 
 
 class Publisher(models.Model):
-    """Publishers curate articles and have affiliated editors and
-    journalists[cite: 4]."""
+    """Model representing a news publisher.
+
+    Publishers curate articles and have affiliated editors and
+    journalists[cite: 4].
+    """
 
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -26,14 +35,19 @@ class Publisher(models.Model):
     )
 
     def __str__(self):
+        """Return the publisher's name."""
         return self.name
 
 
 class CustomUser(AbstractUser):
-    """Custom user model supporting Reader, Editor, and Journalist roles[cite:
-    4, 5]."""
+    """Custom user model supporting role-based access and subscriptions.
+
+    Supports Reader, Editor, and Journalist roles[cite: 4, 5].
+    """
 
     class Role(models.TextChoices):
+        """Available user role choices."""
+
         READER = "READER", "Reader"
         EDITOR = "EDITOR", "Editor"
         JOURNALIST = "JOURNALIST", "Journalist"
@@ -55,14 +69,21 @@ class CustomUser(AbstractUser):
     )
 
     def clean(self):
+        """Validate user fields and clear non-reader subscriptions."""
         super().clean()
-        # Enforce requirement: non-reader roles should have subscription fields
-        # cleared[cite: 6]
+        # Enforce requirement: non-reader roles should have
+        # subscription fields cleared[cite: 6]
         if self.role != self.Role.READER and self.pk:
             self.subscribed_publishers.clear()
             self.subscribed_journalists.clear()
 
     def save(self, *args, **kwargs):
+        """Save the user, sync subscriptions, and update auth groups.
+
+        Clears subscription relations for non-reader roles on updates
+        and assigns the user to the Django Auth Group matching their
+        role.
+        """
         is_new = self.pk is None
         super().save(*args, **kwargs)
 
@@ -71,8 +92,8 @@ class CustomUser(AbstractUser):
             self.subscribed_publishers.clear()
             self.subscribed_journalists.clear()
 
-        # Automatically synchronize the user with their matching Django Auth
-        # Group[cite: 4, 5]
+        # Automatically synchronize the user with their matching
+        # Django Auth Group[cite: 4, 5]
         role_group_map = {
             self.Role.READER: "Reader",
             self.Role.EDITOR: "Editor",
@@ -88,12 +109,16 @@ class CustomUser(AbstractUser):
             self.groups.add(group)
 
     def __str__(self):
+        """Return the username and display label for the user's role."""
         return f"{self.username} ({self.get_role_display()})"
 
 
 class Article(models.Model):
-    """News articles authored by independent journalists or affiliated with a
-    publisher[cite: 4]."""
+    """Model representing a news article.
+
+    Authored by independent journalists or affiliated with a
+    publisher[cite: 4].
+    """
 
     title = models.CharField(max_length=255)
     content = models.TextField()
@@ -115,12 +140,16 @@ class Article(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        """Return the article title and its approval status."""
         status = "Approved" if self.approved else "Pending"
         return f"{self.title} [{status}]"
 
 
 class Newsletter(models.Model):
-    """Curated collections of articles created by journalists[cite: 4]."""
+    """Model representing a curated newsletter.
+
+    Curated collections of articles created by journalists[cite: 4].
+    """
 
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -136,4 +165,5 @@ class Newsletter(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        """Return the newsletter's title."""
         return self.title
