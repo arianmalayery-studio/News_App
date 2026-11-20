@@ -1,3 +1,10 @@
+"""API views for article management and approval webhook logging.
+
+Provides the ArticleViewSet for role-based article CRUD operations and
+subscribed feed retrieval, as well as the approved_article_webhook
+endpoint for logging signal-triggered article approvals.
+"""
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -13,13 +20,22 @@ from .permissions import IsEditorOrAuthorOrReadOnly
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    """Handles CRUD operations for articles per user role and
-    subscriptions[cite: 7]."""
+    """Manage article CRUD operations per user role and subscriptions.
+
+    Handles article queryset and action access based on user role
+    and subscriptions[cite: 7].
+    """
 
     serializer_class = ArticleSerializer
     permission_classes = [IsEditorOrAuthorOrReadOnly]
 
     def get_queryset(self):
+        """Return articles visible to the current user role.
+
+        Editors and superusers receive all articles, journalists
+        receive approved articles plus their own drafts, and all other
+        users receive only approved articles, ordered newest first.
+        """
         user = self.request.user
         # Editors and Superusers can view all articles (approved and
         # unapproved)[cite: 5, 7]
@@ -33,15 +49,18 @@ class ArticleViewSet(viewsets.ModelViewSet):
             return Article.objects.filter(
                 Q(approved=True) | Q(author=user)
             ).order_by("-created_at")
-        # Readers and standard clients only see approved articles[cite: 7]
+        # Readers and standard clients only see approved
+        # articles[cite: 7]
         return Article.objects.filter(approved=True).order_by("-created_at")
 
     @action(
         detail=False, methods=["get"], permission_classes=[IsAuthenticated]
     )
     def subscribed(self, request):
-        """GET /api/articles/subscribed/: Return articles matching reader's
-        subscriptions[cite: 7]."""
+        """Return articles matching the reader's subscriptions.
+
+        Handles GET /api/articles/subscribed/ requests[cite: 7].
+        """
         user = request.user
         if user.role != CustomUser.Role.READER and not user.is_superuser:
             return Response(
@@ -69,15 +88,18 @@ class ArticleViewSet(viewsets.ModelViewSet):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def approved_article_webhook(request):
-    """POST /api/approved/: Internal endpoint logging article approvals
-    triggered by signal[cite: 6, 7]."""
+    """Log approved article payloads received from approval signals.
+
+    Handles internal POST /api/approved/ requests[cite: 6, 7].
+    """
     serializer = ApprovedArticleLogSerializer(data=request.data)
     if serializer.is_valid():
         # Logged to console / response
         data = serializer.validated_data
-        print(f"[API APPROVED LOG] Article ID {
-            data['article_id']} ('{
-            data['title']}') approved.")
+        print(
+            f"[API APPROVED LOG] Article ID {data['article_id']} "
+            f"('{data['title']}') approved."
+        )
         return Response(
             {"status": "logged", "article_id": data["article_id"]},
             status=status.HTTP_201_CREATED,
