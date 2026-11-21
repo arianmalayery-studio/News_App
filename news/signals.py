@@ -29,7 +29,7 @@ def handle_article_approval(sender, instance, created, **kwargs):
     ).values_list("email", flat=True)
     recipient_emails.update([e for e in journalist_subscribers if e])
 
-    # Readers subscribed to the publisher[cite: 4]
+    # Readers subscribed to the publisher
     if instance.publisher:
         publisher_subscribers = CustomUser.objects.filter(
             role=CustomUser.Role.READER,

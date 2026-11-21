@@ -10,7 +10,7 @@ from .models import CustomUser
 
 
 class IsJournalist(permissions.BasePermission):
-    """Permits access only to users with the Journalist role[cite: 5, 7]."""
+    """Permits access only to users with the Journalist role."""
 
     def has_permission(self, request, view):
         """Allow access if user is a journalist or superuser."""
@@ -21,7 +21,7 @@ class IsJournalist(permissions.BasePermission):
 
 
 class IsEditor(permissions.BasePermission):
-    """Permits access only to users with the Editor role[cite: 5, 7]."""
+    """Permits access only to users with the Editor role."""
 
     def has_permission(self, request, view):
         """Allow access if user is an editor or superuser."""

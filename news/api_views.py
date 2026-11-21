@@ -23,7 +23,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
     """Manage article CRUD operations per user role and subscriptions.
 
     Handles article queryset and action access based on user role
-    and subscriptions[cite: 7].
+    and subscriptions.
     """
 
     serializer_class = ArticleSerializer
@@ -38,19 +38,19 @@ class ArticleViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         # Editors and Superusers can view all articles (approved and
-        # unapproved)[cite: 5, 7]
+        # unapproved)
         if user.is_authenticated and (
             user.role == CustomUser.Role.EDITOR or user.is_superuser
         ):
             return Article.objects.all().order_by("-created_at")
         # Journalists can see their own draft articles + all approved
-        # articles[cite: 5]
+        # articles
         if user.is_authenticated and user.role == CustomUser.Role.JOURNALIST:
             return Article.objects.filter(
                 Q(approved=True) | Q(author=user)
             ).order_by("-created_at")
         # Readers and standard clients only see approved
-        # articles[cite: 7]
+        # articles
         return Article.objects.filter(approved=True).order_by("-created_at")
 
     @action(
@@ -59,7 +59,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
     def subscribed(self, request):
         """Return articles matching the reader's subscriptions.
 
-        Handles GET /api/articles/subscribed/ requests[cite: 7].
+        Handles GET /api/articles/subscribed/ requests.
         """
         user = request.user
         if user.role != CustomUser.Role.READER and not user.is_superuser:

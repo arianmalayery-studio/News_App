@@ -13,14 +13,14 @@ class Publisher(models.Model):
     """Model representing a news publisher.
 
     Publishers curate articles and have affiliated editors and
-    journalists[cite: 4].
+    journalists..
     """
 
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # A publisher can have multiple editors and journalists[cite: 4]
+    # A publisher can have multiple editors and journalists
     editors = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="publisher_editors",
@@ -42,7 +42,7 @@ class Publisher(models.Model):
 class CustomUser(AbstractUser):
     """Custom user model supporting role-based access and subscriptions.
 
-    Supports Reader, Editor, and Journalist roles[cite: 4, 5].
+    Supports Reader, Editor, and Journalist roles.
     """
 
     class Role(models.TextChoices):
@@ -56,7 +56,7 @@ class CustomUser(AbstractUser):
         max_length=20, choices=Role.choices, default=Role.READER
     )
 
-    # Reader-specific subscription fields[cite: 6]
+    # Reader-specific subscription fields
     subscribed_publishers = models.ManyToManyField(
         Publisher, related_name="reader_subscribers", blank=True
     )
@@ -72,7 +72,7 @@ class CustomUser(AbstractUser):
         """Validate user fields and clear non-reader subscriptions."""
         super().clean()
         # Enforce requirement: non-reader roles should have
-        # subscription fields cleared[cite: 6]
+        # subscription fields cleared
         if self.role != self.Role.READER and self.pk:
             self.subscribed_publishers.clear()
             self.subscribed_journalists.clear()
