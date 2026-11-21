@@ -3,13 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-News App documentation
-======================
+News Application Documentation
+==============================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
+Welcome to the technical documentation for the News Application, a role-based
+news publishing platform and REST API built with Django and Django REST
+Framework.
 
 .. toctree::
    :maxdepth: 2
