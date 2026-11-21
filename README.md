@@ -82,7 +82,7 @@ The application leverages event automation to decouple publication actions from 
 ## 💻 Tech Stack
 
 * **Backend**: Python 3.14, Django 6.1, Django REST Framework
-* **Database**: MariaDB / MySQL (via `mysqlclient` / `pymysql`)
+* **Database**: MariaDB / MySQL (via `mysqlclient`)
 * **Documentation**: Sphinx (docs/_build/html/index.html)
 * **Containerization**: Docker (python:3.12-slim)
 * **Authentication**: Django Session Authentication & DRF Token Authentication
@@ -97,7 +97,7 @@ Default (SQLite): Out of the box, settings.py automatically falls back to SQLite
 Optional MariaDB / MySQL Configuration: If you wish to use MariaDB/MySQL instead, ensure your database server is running and execute:
 
 ```sql
-CCREATE DATABASE news_application_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE news_application_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER 'news_user'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON news_application_db.* TO 'news_user'@'localhost';
 FLUSH PRIVILEGES;
