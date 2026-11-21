@@ -10,7 +10,7 @@ from .models import CustomUser, Publisher, Article, Newsletter
 
 
 class PublisherSerializer(serializers.ModelSerializer):
-    """Serializer for Publisher entities[cite: 4, 8]."""
+    """Serializer for Publisher entities."""
 
     class Meta:
         """Metadata options for PublisherSerializer."""
@@ -38,7 +38,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    """Serializer for news articles[cite: 4, 8]."""
+    """Serializer for news articles."""
 
     author_username = serializers.ReadOnlyField(source="author.username")
     publisher_name = serializers.ReadOnlyField(source="publisher.name")
@@ -75,7 +75,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class NewsletterSerializer(serializers.ModelSerializer):
-    """Serializer for curated newsletters[cite: 4, 8]."""
+    """Serializer for curated newsletters."""
 
     author_username = serializers.ReadOnlyField(source="author.username")
 
@@ -103,7 +103,7 @@ class NewsletterSerializer(serializers.ModelSerializer):
 class ApprovedArticleLogSerializer(serializers.Serializer):
     """Serializer for approved article webhook payloads.
 
-    Validates external syndication simulation payloads[cite: 6, 7].
+    Validates external syndication simulation payloads.
     """
 
     article_id = serializers.IntegerField()
